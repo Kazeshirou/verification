@@ -1,0 +1,186 @@
+\documentclass[a4paper,12pt]{report}
+
+\input{header.tex}
+
+
+\title{Отчёт \\ по лабораторной работе №1 \\ на тему: \\ "Знакомство с Promela" \\ по курсу: Математические основы ПО}
+\author{Жаровой Наталии Александровны, ИУ7-41М\\}
+
+\begin{document}
+
+\maketitle
+
+\section*{Постановка задачи}
+
+Необходимо на языке Promela описать модель программы, осуществляющей переход 
+в разные состояния. Отчет должен содержать код на языке promela и схему 
+автомата переходов между состояниями.
+
+\section*{Листинг программы}
+\begin{Verbatim}
+#define N 6
+
+proctype fibonacci(chan p; byte n){
+    int f1 = 0;
+    int f2 = 1;
+    int result = 0;
+    byte current_n = 1;
+    do
+    :: (n == 0) -> break
+    :: (n == 1) ->
+        result = f2;
+        break 
+    :: (current_n < n) ->
+        result = f1 + f2;
+        f1 = f2;
+        f2 = result;
+        current_n = current_n + 1
+    :: (current_n == n) -> break
+    od;
+    p!result
+}
+
+
+init {
+    chan child = [1] of {int}
+    int result;
+
+    run fibonacci(child, N);
+    child?result;
+    printf("result: %d\n", result)
+}
+
+\end{Verbatim}
+
+\section*{Вывод программы}
+\begin{Verbatim}
+spin -p -l  lab1.pml
+
+  0:    proc  - (:root:) creates proc  0 (:init:)
+Starting fibonacci with pid 1
+  1:    proc  0 (:init::1) creates proc  1 (fibonacci)
+  1:    proc  0 (:init::1) lab1.pml:28 (state 1)        [(run fibonacci(child,6))]
+                queue 1 (:init:(0):child): 
+  2:    proc  1 (fibonacci:1) lab1.pml:13 (state 6)     [((current_n<n))]
+                queue 1 (fibonacci(1):p): 
+  3:    proc  1 (fibonacci:1) lab1.pml:14 (state 7)     [result = (f1+f2)]
+                fibonacci(1):result = 1
+                queue 1 (fibonacci(1):p): 
+  4:    proc  1 (fibonacci:1) lab1.pml:15 (state 8)     [f1 = f2]
+                fibonacci(1):f1 = 1
+                queue 1 (fibonacci(1):p): 
+  5:    proc  1 (fibonacci:1) lab1.pml:16 (state 9)     [f2 = result]
+                fibonacci(1):f2 = 1
+                queue 1 (fibonacci(1):p): 
+  6:    proc  1 (fibonacci:1) lab1.pml:17 (state 10)    [current_n = (current_n+1)]
+                fibonacci(1):current_n = 2
+                queue 1 (fibonacci(1):p): 
+  7:    proc  1 (fibonacci:1) lab1.pml:20 (state 14)    [.(goto)]
+                queue 1 (fibonacci(1):p): 
+  8:    proc  1 (fibonacci:1) lab1.pml:13 (state 6)     [((current_n<n))]
+                queue 1 (fibonacci(1):p): 
+  9:    proc  1 (fibonacci:1) lab1.pml:14 (state 7)     [result = (f1+f2)]
+                fibonacci(1):result = 2
+                queue 1 (fibonacci(1):p): 
+ 10:    proc  1 (fibonacci:1) lab1.pml:15 (state 8)     [f1 = f2]
+                fibonacci(1):f1 = 1
+                queue 1 (fibonacci(1):p): 
+ 11:    proc  1 (fibonacci:1) lab1.pml:16 (state 9)     [f2 = result]
+                fibonacci(1):f2 = 2
+                queue 1 (fibonacci(1):p): 
+ 12:    proc  1 (fibonacci:1) lab1.pml:17 (state 10)    [current_n = (current_n+1)]
+                fibonacci(1):current_n = 3
+                queue 1 (fibonacci(1):p): 
+ 13:    proc  1 (fibonacci:1) lab1.pml:20 (state 14)    [.(goto)]
+                queue 1 (fibonacci(1):p): 
+ 14:    proc  1 (fibonacci:1) lab1.pml:13 (state 6)     [((current_n<n))]
+                queue 1 (fibonacci(1):p): 
+ 15:    proc  1 (fibonacci:1) lab1.pml:14 (state 7)     [result = (f1+f2)]
+                fibonacci(1):result = 3
+                queue 1 (fibonacci(1):p): 
+ 16:    proc  1 (fibonacci:1) lab1.pml:15 (state 8)     [f1 = f2]
+                fibonacci(1):f1 = 2
+                queue 1 (fibonacci(1):p): 
+ 17:    proc  1 (fibonacci:1) lab1.pml:16 (state 9)     [f2 = result]
+                fibonacci(1):f2 = 3
+                queue 1 (fibonacci(1):p): 
+ 18:    proc  1 (fibonacci:1) lab1.pml:17 (state 10)    [current_n = (current_n+1)]
+                fibonacci(1):current_n = 4
+                queue 1 (fibonacci(1):p): 
+ 19:    proc  1 (fibonacci:1) lab1.pml:20 (state 14)    [.(goto)]
+                queue 1 (fibonacci(1):p): 
+ 20:    proc  1 (fibonacci:1) lab1.pml:13 (state 6)     [((current_n<n))]
+                queue 1 (fibonacci(1):p): 
+ 21:    proc  1 (fibonacci:1) lab1.pml:14 (state 7)     [result = (f1+f2)]
+                fibonacci(1):result = 5
+                queue 1 (fibonacci(1):p): 
+ 22:    proc  1 (fibonacci:1) lab1.pml:15 (state 8)     [f1 = f2]
+                fibonacci(1):f1 = 3
+                queue 1 (fibonacci(1):p): 
+ 23:    proc  1 (fibonacci:1) lab1.pml:16 (state 9)     [f2 = result]
+                fibonacci(1):f2 = 5
+                queue 1 (fibonacci(1):p): 
+ 24:    proc  1 (fibonacci:1) lab1.pml:17 (state 10)    [current_n = (current_n+1)]
+                fibonacci(1):current_n = 5
+                queue 1 (fibonacci(1):p): 
+ 25:    proc  1 (fibonacci:1) lab1.pml:20 (state 14)    [.(goto)]
+                queue 1 (fibonacci(1):p): 
+ 26:    proc  1 (fibonacci:1) lab1.pml:13 (state 6)     [((current_n<n))]
+                queue 1 (fibonacci(1):p): 
+ 27:    proc  1 (fibonacci:1) lab1.pml:14 (state 7)     [result = (f1+f2)]
+                fibonacci(1):result = 8
+                queue 1 (fibonacci(1):p): 
+ 28:    proc  1 (fibonacci:1) lab1.pml:15 (state 8)     [f1 = f2]
+                fibonacci(1):f1 = 5
+                queue 1 (fibonacci(1):p): 
+ 29:    proc  1 (fibonacci:1) lab1.pml:16 (state 9)     [f2 = result]
+                fibonacci(1):f2 = 8
+                queue 1 (fibonacci(1):p): 
+ 30:    proc  1 (fibonacci:1) lab1.pml:17 (state 10)    [current_n = (current_n+1)]
+                fibonacci(1):current_n = 6
+                queue 1 (fibonacci(1):p): 
+ 31:    proc  1 (fibonacci:1) lab1.pml:20 (state 14)    [.(goto)]
+                queue 1 (fibonacci(1):p): 
+ 32:    proc  1 (fibonacci:1) lab1.pml:18 (state 11)    [((current_n==n))]
+                queue 1 (fibonacci(1):p): 
+ 33:    proc  1 (fibonacci:1) lab1.pml:18 (state 12)    [goto :b0]
+                queue 1 (fibonacci(1):p): 
+ 34:    proc  1 (fibonacci:1) lab1.pml:20 (state 16)    [p!result]
+                queue 1 (fibonacci(1):p): [8]
+ 34:    proc  1 (fibonacci:1)           terminates
+ 35:    proc  0 (:init::1) lab1.pml:29 (state 2)        [child?result]
+                :init:(0):result = 8
+                queue 1 (:init:(0):child): 
+      result: 8
+ 36:    proc  0 (:init::1) lab1.pml:30 (state 3)    [printf('result: %d\\n',result)]
+                queue 1 (:init:(0):child): 
+ 36:    proc  0 (:init::1)       terminates
+2 processes created
+\end{Verbatim}
+
+\section*{Схемы переходов между состояниями программы}
+На рисунках \ref{fig:init}, \ref{fig:p_fibonacci} изображены схемы переходов между сотстояниями для каждого процесса: 
+
+\begin{figure}
+\centering
+\includegraphics[]{../bin/init_dot.png}
+\caption{Процесс init}
+\label{fig:init}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[]{../bin/p_fibonacci_dot.png}
+\caption{Процесс fibonacci}
+\label{fig:p_fibonacci}
+\end{figure}
+
+\section*{Выводы}
+
+В процессе выполнения работы была написана модель программы, 
+вычисляющей N-ый элемент последовательности Фибоначчи, на языке Promela. 
+Так же были изучены основные принципы работы с программой spin для анализа 
+моделей на языке Promela и сгенерирована схема переходов между состояниями программы.
+
+
+\end{document}
