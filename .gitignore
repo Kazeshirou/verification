@@ -1,2 +1,6 @@
 docs
 bin
+*.pdf
+*.out
+*.aux
+*.log
